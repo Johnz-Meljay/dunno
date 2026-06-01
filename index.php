@@ -70,7 +70,7 @@ if (!isset($_SESSION['user_id'])) {
         <a href="logout.php">Logout</a>
     </div>
 
-    <h1 class="flashy-title">THE ARCADE</h1>
+    <h1 class="flashy-title" id="arcade-title">THE ARCADE</h1>
 
     <button class="btn-back" id="back-btn" onclick="location.reload()">Back to Arcade Menu</button>
 
@@ -86,6 +86,8 @@ if (!isset($_SESSION['user_id'])) {
             <button class="btn-game" onclick="showGame('ttt')">❌ Tic Tac Toe ⭕</button>
             <button class="btn-game" onclick="showGame('madlibs')">📝 Mad Libs</button>
             <button class="btn-game" onclick="showGame('guess')">🔢 Guess Number</button>
+            <button class="btn-game" onclick="showGame('rps')">🎲 Rock Paper Scissors</button>
+            <button class="btn-game" onclick="showGame('math')">➕ Quick Math</button>
         </div>
     </div>
 
@@ -131,22 +133,36 @@ if (!isset($_SESSION['user_id'])) {
         <p id="guess-attempts" style="color: #aaa;"></p>
     </div>
 
+    <!-- Rock Paper Scissors -->
+    <div id="rps-container" class="game-container">
+        <div class="score-display" id="rps-score" style="color: #ffd60a;">Wins: 0, Losses: 0, Ties: 0</div>
+        <p id="rps-result" style="font-size: 24px; color: #fff; margin-bottom: 20px;">Pick Rock, Paper, or Scissors to play!</p>
+        <div style="display:flex; justify-content:center; gap: 15px; flex-wrap: wrap;">
+            <button class="btn-game" onclick="playRPS('rock')">🪨 Rock</button>
+            <button class="btn-game" onclick="playRPS('paper')">📄 Paper</button>
+            <button class="btn-game" onclick="playRPS('scissors')">✂️ Scissors</button>
+        </div>
+    </div>
+
+    <!-- Quick Math -->
+    <div id="math-container" class="game-container">
+        <div class="score-display" id="math-question" style="color: #57cc99;">Solve the problem!</div>
+        <input type="number" id="math-answer" placeholder="Your answer">
+        <button class="btn-game" style="width: 160px;" onclick="checkMath()">Submit</button>
+        <button class="btn-game" style="width: 160px;" onclick="resetMath()">New Problem</button>
+        <p id="math-result" style="font-size: 24px; color: #ffd60a; margin-top: 20px;"></p>
+    </div>
+
     <script>
         // --- SYSTEM SETTINGS ---
         document.getElementById('hs-snake').innerText = localStorage.getItem('hs_snake') || 0;
         document.getElementById('hs-tetris').innerText = localStorage.getItem('hs_tetris') || 0;
         let currentGame = null;
 
-        function showGame(game) {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('back-btn').style.display = 'block';
-            document.getElementById(game + '-container').style.display = 'block';
-            currentGame = game;
-            
-            if(game === 'tetris') runTetris();
-            if(game === 'snake') runSnake();
-            if(game === 'ttt') resetTTT();
-            if(game === 'guess') resetGuess();
+        function toggleArcadeTitle(game) {
+            const title = document.getElementById('arcade-title');
+            if (!title) return;
+            title.style.display = (game === 'tetris' || game === 'snake') ? 'none' : 'block';
         }
 
         // --- ENHANCED TIC TAC TOE ---
@@ -252,6 +268,78 @@ if (!isset($_SESSION['user_id'])) {
                 res.innerText = "Too High! Try going lower. ⬇️";
                 res.style.color = "#ffb703";
             }
+        }
+
+        // --- ROCK PAPER SCISSORS ---
+        let rpsStats = { wins: 0, losses: 0, ties: 0 };
+        const rpsChoices = ['rock', 'paper', 'scissors'];
+
+        function resetRPS() {
+            rpsStats = { wins: 0, losses: 0, ties: 0 };
+            document.getElementById('rps-score').innerText = 'Wins: 0, Losses: 0, Ties: 0';
+            document.getElementById('rps-result').innerText = 'Pick Rock, Paper, or Scissors to play!';
+        }
+
+        function playRPS(choice) {
+            const computer = rpsChoices[Math.floor(Math.random() * rpsChoices.length)];
+            let message = `You chose ${choice}, computer chose ${computer}. `;
+            if (choice === computer) {
+                message += "It's a tie! 🤝";
+                rpsStats.ties++;
+            } else if (
+                (choice === 'rock' && computer === 'scissors') ||
+                (choice === 'paper' && computer === 'rock') ||
+                (choice === 'scissors' && computer === 'paper')
+            ) {
+                message += 'You win! 🎉';
+                rpsStats.wins++;
+            } else {
+                message += 'You lose! 💥';
+                rpsStats.losses++;
+            }
+            document.getElementById('rps-result').innerText = message;
+            document.getElementById('rps-score').innerText = `Wins: ${rpsStats.wins}, Losses: ${rpsStats.losses}, Ties: ${rpsStats.ties}`;
+        }
+
+        // --- QUICK MATH ---
+        let mathAnswer = 0;
+
+        function resetMath() {
+            const a = Math.floor(Math.random() * 20) + 1;
+            const b = Math.floor(Math.random() * 20) + 1;
+            const ops = ['+', '-', '*'];
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            mathAnswer = op === '+' ? a + b : op === '-' ? a - b : a * b;
+            document.getElementById('math-question').innerText = `What is ${a} ${op} ${b}?`;
+            document.getElementById('math-answer').value = '';
+            document.getElementById('math-result').innerText = '';
+        }
+
+        function checkMath() {
+            const guess = parseInt(document.getElementById('math-answer').value, 10);
+            if (isNaN(guess)) return;
+            const result = document.getElementById('math-result');
+            if (guess === mathAnswer) {
+                result.innerText = 'Correct! ✅ Great job!';
+                result.style.color = '#00f5d4';
+            } else {
+                result.innerText = `Nope — the right answer is ${mathAnswer}. Try another!`; 
+                result.style.color = '#ffb703';
+            }
+        }
+
+        function showGame(game) {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('back-btn').style.display = 'block';
+            document.getElementById(game + '-container').style.display = 'block';
+            currentGame = game;
+            if(game === 'tetris') runTetris();
+            if(game === 'snake') runSnake();
+            if(game === 'ttt') resetTTT();
+            if(game === 'guess') resetGuess();
+            if(game === 'rps') resetRPS();
+            if(game === 'math') resetMath();
+            toggleArcadeTitle(game);
         }
 
         // --- COMPLETE TETRIS ENGINE ---
