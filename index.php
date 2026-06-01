@@ -27,7 +27,25 @@ if (!isset($_SESSION['user_id'])) {
         
         .btn-back { padding: 10px 20px; background: #ff1493; color: white; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; display: none; margin: 0 auto 20px auto; }
         .btn-back:hover { background: #c1106d; }
-        
+
+        .flashy-title { font-size: 5rem; text-transform: uppercase; letter-spacing: 0.5rem; font-weight: 900; margin: 0 auto 20px; max-width: 100%; line-height: 1; background: linear-gradient(90deg, #ff217a, #ffd300, #34d6f0, #9b5de5); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 20px rgba(255, 33, 122, 0.75), 0 0 40px rgba(255, 211, 0, 0.55), 0 0 60px rgba(52, 214, 240, 0.45); animation: neonGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 10px rgba(255, 33, 122, 0.8), 0 0 20px rgba(255, 211, 0, 0.6), 0 0 30px rgba(52, 214, 240, 0.5);
+            }
+            50% {
+                transform: scale(1.04);
+                text-shadow: 0 0 30px rgba(255, 33, 122, 0.95), 0 0 60px rgba(255, 211, 0, 0.75), 0 0 90px rgba(52, 214, 240, 0.65);
+            }
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(255, 33, 122, 0.85), 0 0 40px rgba(255, 211, 0, 0.65), 0 0 60px rgba(52, 214, 240, 0.55);
+            }
+        }
+
         .game-container { display: none; margin-top: 20px; }
         canvas { background: #000; display: block; margin: 0 auto; box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
         #tetris { border: 5px solid #9b5de5; }
@@ -51,6 +69,8 @@ if (!isset($_SESSION['user_id'])) {
         <h3>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h3>
         <a href="logout.php">Logout</a>
     </div>
+
+    <h1 class="flashy-title">THE ARCADE</h1>
 
     <button class="btn-back" id="back-btn" onclick="location.reload()">Back to Arcade Menu</button>
 
