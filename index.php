@@ -88,6 +88,7 @@ if (!isset($_SESSION['user_id'])) {
             <button class="btn-game" onclick="showGame('guess')">🔢 Guess Number</button>
             <button class="btn-game" onclick="showGame('rps')">🎲 Rock Paper Scissors</button>
             <button class="btn-game" onclick="showGame('math')">➕ Quick Math</button>
+            <a class="btn-game" href="calculator.php">🧮 Calculator</a>
         </div>
     </div>
 
